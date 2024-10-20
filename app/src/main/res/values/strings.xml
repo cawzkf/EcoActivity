@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">ecoActivity</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">EcoActivity</string>
+    <string name="nav_header_subtitle">supportecoactivity@gmail.com</string>
+    <string name="nav_header_desc">Logo</string>
+    <string name="action_settings">Ajuda</string>
+
+    <string name="menu_painel">Painel</string>
+    <string name="menu_graficos">Gráficos</string>
+    <string name="menu_aparelhos">Aparelhos</string>
+    <string name="menu_notificações">Notificações</string>
+    <string name="menu_conta">Conta</string>
+
+</resources>
