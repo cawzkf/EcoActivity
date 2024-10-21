@@ -1,5 +1,6 @@
 package com.ecoactivity.app.ui
 
+import android.content.Intent
 import androidx.fragment.app.viewModels
 import android.os.Bundle
 import android.provider.ContactsContract.CommonDataKinds.Email
@@ -10,7 +11,9 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
+import com.ecoactivity.app.MainActivity
 import com.ecoactivity.app.R
 
 class LoginFragment : Fragment() {
@@ -63,6 +66,11 @@ class LoginFragment : Fragment() {
                 showError("Senha Inválida")
             }
         }
-
+        //função para fazer a navegação depois do login
+        private fun navigateToMainActivity(){
+            val intent = Intent(activity, MainActivity::class.java)
+            startActivity(intent)
+            activity?.finish()
+        }
     }
 }
