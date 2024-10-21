@@ -48,5 +48,21 @@ class LoginFragment : Fragment() {
         textViewError = view.findViewById(R.id.textViewError)
         textViewRegistrationPrompt= view.findViewById(R.id.textRegistration)
 
+        //adicionar evento para o botão
+        buttonLogin.setOnClickListener {
+            val email = editTextEmail.text.toString()
+            val password = editTextPassword.text.toString()
+
+            if (isValidInput(email,password)){
+                viewModel.loginUser(email,password)
+            }
+            if(isInvalidInput)(email){
+                showError("Email Inválido")
+            }
+            else{
+                showError("Senha Inválida")
+            }
+        }
+
     }
 }
