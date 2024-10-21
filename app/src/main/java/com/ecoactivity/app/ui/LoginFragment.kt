@@ -35,12 +35,18 @@ class LoginFragment : Fragment() {
         // TODO: Use the ViewModel
     }
 
-
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         return inflater.inflate(R.layout.fragment_login, container, false)
+
+        //inicializar as views
+        editTextEmail = view.findViewById(R.id.editTextUsername)
+        editTextPassword =view.findViewById(R.id.editTextPassword)
+        buttonLogin = view.findViewById(R.id.buttonLogin)
+        textViewError = view.findViewById(R.id.textViewError)
+        textViewRegistrationPrompt= view.findViewById(R.id.textRegistration)
+
     }
 }
