@@ -3,6 +3,7 @@ package com.ecoactivity.app.ui
 import android.content.Intent
 import androidx.fragment.app.viewModels
 import android.os.Bundle
+import android.os.Message
 import android.provider.ContactsContract.CommonDataKinds.Email
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -46,31 +47,52 @@ class LoginFragment : Fragment() {
 
         //inicializar as views
         editTextEmail = view.findViewById(R.id.editTextUsername)
-        editTextPassword =view.findViewById(R.id.editTextPassword)
+        editTextPassword = view.findViewById(R.id.editTextPassword)
         buttonLogin = view.findViewById(R.id.buttonLogin)
         textViewError = view.findViewById(R.id.textViewError)
-        textViewRegistrationPrompt= view.findViewById(R.id.textRegistration)
+        textViewRegistrationPrompt = view.findViewById(R.id.textRegistration)
 
         //adicionar evento para o botão
         buttonLogin.setOnClickListener {
             val email = editTextEmail.text.toString()
             val password = editTextPassword.text.toString()
 
-            if (isValidInput(email,password)){
-                viewModel.loginUser(email,password)
+            if (isValidInput(email, password)) {
+                viewModel.loginUser(email, password)
             }
-            if(isInvalidInput)(email){
+            if (isInvalidInput) (email){
                 showError("Email Inválido")
             }
-            else{
+            else {
                 showError("Senha Inválida")
             }
         }
-        //função para fazer a navegação depois do login
-        private fun navigateToMainActivity(){
-            val intent = Intent(activity, MainActivity::class.java)
-            startActivity(intent)
-            activity?.finish()
-        }
+        
+        //observar o estado do login
+        viewModel.loginState.observe(viewLifecycleOwner, Observer { state ->
+            when (state) {
+                is LoginState.Sucess -> navigateToMainActivity()
+                is LoginState.Error -> showError(state.message)
+                is LoginState.Loading -> buttonLogin.isEnabled = false
+            }
+        })
+        return view
     }
+    
+    //função para fazer a navegação depois do login
+    private fun navigateToMainActivity() {
+        val intent = Intent(activity, MainActivity::class.java)
+        startActivity(intent)
+        activity?.finish()
+    }
+    
+    //Exibir messagem de erro
+    private fun showError(message: String){
+        textViewError.text = message
+        textViewError.visibility = View.VISIBLE
+        buttonLogin.isEnabled = true
+    }
+    
+    
+
 }
