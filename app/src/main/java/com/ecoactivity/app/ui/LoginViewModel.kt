@@ -6,8 +6,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.handleCoroutineException
+import java.lang.Exception
 
 class LoginViewModel : ViewModel() {
 
@@ -33,11 +36,19 @@ class LoginViewModel : ViewModel() {
                 }
             }
     }
-
+    //Tratamento de erros  de login
+    private  fun handleLoginError(exception: Exception?): String{
+        return when (exception){
+            is FirebaseAuthInvalidUserException -> "Usuário não encontrado. Verifique seu email ou crie uma conta."
+            is FirebaseAuthInvalidCredentialsException -> "Senha Inválida. Tente Novamente."
+            else -> "Erro desconhecido. Tente novamente mais tarde."
+        }
+    }
     //Classe selada para vai representar o estado possíveis de login
     sealed class LoginState{
         object Sucess : LoginState()
         data class Error(val message: String): LoginState()
         object Loading : LoginState()
     }
+
 }
