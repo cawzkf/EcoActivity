@@ -35,5 +35,11 @@
         android:label="@string/menu_conta"
         tools:layout="@layout/fragment_conta" />
 
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.ecoactivity.app.ui.LoginFragment"
+        android:label="Login"
+        tools:layout="@layout/fragment_login" />
+
 
 </navigation>

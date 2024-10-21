@@ -10,9 +10,9 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import com.ecoactivity.app.MainActivity
 import com.ecoactivity.app.R
+import com.ecoactivity.app.ui.LoginViewModel
 
 class LoginFragment : Fragment() {
 
@@ -41,8 +41,8 @@ class LoginFragment : Fragment() {
 
         // Adicionar evento para o botão de login
         buttonLogin.setOnClickListener {
-            val email = editTextEmail.text.toString()
-            val password = editTextPassword.text.toString()
+            val email = editTextEmail.text.toString().trim()
+            val password = editTextPassword.text.toString().trim()
 
             if (isValidInput(email, password)) {
                 viewModel.loginUser(email, password) // Executa o login
@@ -52,13 +52,13 @@ class LoginFragment : Fragment() {
         }
 
         // Observar o estado do login
-        viewModel.loginState.observe(viewLifecycleOwner, Observer { state ->
+        viewModel.loginState.observe(viewLifecycleOwner) { state ->
             when (state) {
-                is LoginState.Success -> navigateToMainActivity() // Sucesso no login
-                is LoginState.Error -> showError(state.message) // Erro no login
-                is LoginState.Loading -> buttonLogin.isEnabled = false // Desativa botão durante o login
+                is LoginViewModel.LoginState.Success -> navigateToMainActivity() // Sucesso no login
+                is LoginViewModel.LoginState.Error -> showError(state.message) // Erro no login
+                is LoginViewModel.LoginState.Loading -> buttonLogin.isEnabled = false // Desativa botão durante o login
             }
-        })
+        }
 
         return view
     }

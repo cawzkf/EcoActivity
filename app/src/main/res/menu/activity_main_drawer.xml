@@ -27,7 +27,10 @@
             android:id="@+id/nav_conta"
             android:icon="@drawable/conta"
             android:title="@string/menu_conta" />
-
+    <item
+        android:title="Pagina de Login"
+        android:icon="@android:color/transparent"
+        android:id="@+id/buttonLogin"/>
     </group>
 
     <item
