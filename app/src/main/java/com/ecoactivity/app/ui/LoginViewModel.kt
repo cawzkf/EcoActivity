@@ -1,5 +1,6 @@
 package com.ecoactivity.app.ui
 
+import androidx.core.app.NotificationCompat.MessagingStyle.Message
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -33,5 +34,10 @@ class LoginViewModel : ViewModel() {
             }
     }
 
-
+    //Classe selada para vai representar o estado possíveis de login
+    sealed class LoginState{
+        object Sucess : LoginState()
+        data class Error(val message: String): LoginState()
+        object Loading : LoginState()
+    }
 }
