@@ -1,4 +1,4 @@
-package com.ecoactivity.app.ui.gallery
+package com.ecoactivity.app.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,11 +7,12 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.ecoactivity.app.databinding.FragmentGalleryBinding
+import com.ecoactivity.app.databinding.FragmentPainelBinding
 
-class GalleryFragment : Fragment() {
 
-    private var _binding: FragmentGalleryBinding? = null
+class PainelFragment: Fragment() {
+
+    private var _binding: FragmentPainelBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -22,14 +23,14 @@ class GalleryFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val galleryViewModel =
-            ViewModelProvider(this).get(GalleryViewModel::class.java)
+        val PainelViewModel =
+            ViewModelProvider(this).get(PainelViewModel::class.java)
 
-        _binding = FragmentGalleryBinding.inflate(inflater, container, false)
+        _binding = FragmentPainelBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val textView: TextView = binding.textGrafico
-        galleryViewModel.text.observe(viewLifecycleOwner) {
+        val textView: TextView = binding.textPainel
+        PainelViewModel.text.observe(viewLifecycleOwner) {
             textView.text = it
         }
         return root

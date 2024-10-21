@@ -1,4 +1,4 @@
-package com.ecoactivity.app.ui.slideshow
+package com.ecoactivity.app.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,11 +7,11 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.ecoactivity.app.databinding.FragmentSlideshowBinding
+import com.ecoactivity.app.databinding.FragmentGraficosBinding
 
-class SlideshowFragment : Fragment() {
+class GraficosFragment : Fragment() {
 
-    private var _binding: FragmentSlideshowBinding? = null
+    private var _binding: FragmentGraficosBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -22,14 +22,14 @@ class SlideshowFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val slideshowViewModel =
-            ViewModelProvider(this).get(SlideshowViewModel::class.java)
+        val galleryViewModel =
+            ViewModelProvider(this).get(GraficosViewModel::class.java)
 
-        _binding = FragmentSlideshowBinding.inflate(inflater, container, false)
+        _binding = FragmentGraficosBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val textView: TextView = binding.textAparelhos
-        slideshowViewModel.text.observe(viewLifecycleOwner) {
+        val textView: TextView = binding.textGraficos
+        galleryViewModel.text.observe(viewLifecycleOwner) {
             textView.text = it
         }
         return root

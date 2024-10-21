@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="8dp">
+
+    <TextView
+        android:id="@+id/column_aparelho"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Aparelho"
+        android:padding="8dp"/>
+
+    <TextView
+        android:id="@+id/column_tipo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Tipo"
+        android:padding="8dp"/>
+
+    <TextView
+        android:id="@+id/column_consumo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Consumo"
+        android:padding="8dp"/>
+
+    <TextView
+        android:id="@+id/column_custo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Custo"
+        android:padding="8dp"/>
+</LinearLayout>

@@ -5,8 +5,8 @@
     <string name="nav_header_title">EcoActivity</string>
     <string name="nav_header_subtitle">supportecoactivity@gmail.com</string>
     <string name="nav_header_desc">Logo</string>
-    <string name="action_settings">Ajuda</string>
-
+    <string name="action_settings">+</string>
+    <string name="menu_educacional">Educacional</string>
     <string name="menu_painel">Painel</string>
     <string name="menu_graficos">Gráficos</string>
     <string name="menu_aparelhos">Aparelhos</string>
