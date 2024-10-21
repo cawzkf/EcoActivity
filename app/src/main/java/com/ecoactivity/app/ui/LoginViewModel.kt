@@ -12,7 +12,9 @@ class LoginViewModel : ViewModel() {
     //autentica com firebase
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
-
+    //LiveData para representar o estado do login
+    private val _loginState = MutableLiveData<LoginState>()
+    val loginState: LiveData<LoginState> get() = _loginState
 
 
 }
