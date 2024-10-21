@@ -32,7 +32,7 @@ class LoginViewModel : ViewModel() {
                     _loginState.value = LoginState.Sucess
                 }
                 else{
-                    _loginState.value = LoginState.Error(handleLoginError(task.exception)
+                    _loginState.value = LoginState.Error(handleLoginError(task.exception))
                 }
             }
     }
