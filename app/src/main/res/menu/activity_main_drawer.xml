@@ -18,19 +18,15 @@
             android:title="@string/menu_aparelhos" />
         <item
             android:id="@+id/nav_educacional"
-            android:title="@string/menu_educacional"/>
+            android:title="@string/menu_educacional" />
         <item
-            android:id="@+id/nav_notificações"
+            android:id="@+id/nav_notificacoes"
             android:icon="@drawable/notification"
-            android:title="@string/menu_notificações" />
+            android:title="@string/menu_notificacoes" />
         <item
             android:id="@+id/nav_conta"
             android:icon="@drawable/conta"
             android:title="@string/menu_conta" />
-    <item
-        android:title="Pagina de Login"
-        android:icon="@android:color/transparent"
-        android:id="@+id/buttonLogin"/>
     </group>
 
     <item
@@ -41,14 +37,23 @@
         android:layout_width="match_parent"
         android:layout_height="100dp" />
 
-    <group>
+    <item
+        android:id="@+id/nav_spacer"
+        android:icon="@android:color/transparent"
+        android:title=""
+        android:enabled="false"
+        android:layout_width="match_parent"
+        android:layout_height="100dp" />
+
+    <group android:checkableBehavior="none">
         <item
             android:id="@+id/nav_ajuda"
             android:icon="@drawable/ajuda"
-            android:title="Ajuda"/>
+            android:title="Ajuda" />
         <item
             android:id="@+id/nav_sobre"
             android:icon="@drawable/sobre"
-            android:title="Sobre"/>
+            android:title="Sobre" />
     </group>
+
 </menu>

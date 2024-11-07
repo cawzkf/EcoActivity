@@ -5,9 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class NotificationViewModel : ViewModel() {
-
     private val _text = MutableLiveData<String>().apply {
-        value = "This is home Fragment"
+        value = "Ativar Notificações" // Mensagem padrão
     }
-    val text: LiveData<String> = _text
+    val text: LiveData<String> = _text // Expondo o LiveData
 }

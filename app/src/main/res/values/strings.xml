@@ -10,7 +10,10 @@
     <string name="menu_painel">Painel</string>
     <string name="menu_graficos">Gráficos</string>
     <string name="menu_aparelhos">Aparelhos</string>
-    <string name="menu_notificações">Notificações</string>
+    <string name="menu_notificacoes">Notificações</string>
     <string name="menu_conta">Conta</string>
+    <string name="menu_register">Registro</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

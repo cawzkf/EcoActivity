@@ -1,13 +1,12 @@
-package com.ecoactivity.app.ui
+package com.ecoactivity.app.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.google.firebase.auth.FirebaseAuth
 
 class ContaViewModel : ViewModel() {
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is home Fragment"
+    fun logout() {
+        auth.signOut() // Faz logout do usuário
     }
-    val text: LiveData<String> = _text
 }

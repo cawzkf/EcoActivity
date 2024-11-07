@@ -24,10 +24,16 @@
         tools:layout="@layout/fragment_aparelhos" />
 
     <fragment
-        android:id="@+id/nav_notificações"
+        android:id="@+id/nav_notificacoes"
         android:name="com.ecoactivity.app.ui.notification.NotificationFragment"
-        android:label="@string/menu_notificações"
+        android:label="@string/menu_notificacoes"
         tools:layout="@layout/fragment_notification" />
+
+    <fragment
+        android:id="@+id/nav_register"
+        android:name="com.ecoactivity.app.ui.RegisterFragment"
+        android:label="@string/menu_register"
+        tools:layout="@layout/fragment_register" />
 
     <fragment
         android:id="@+id/nav_conta"
@@ -36,10 +42,16 @@
         tools:layout="@layout/fragment_conta" />
 
     <fragment
-        android:id="@+id/loginFragment"
+        android:id="@+id/nav_login"
         android:name="com.ecoactivity.app.ui.LoginFragment"
         android:label="Login"
         tools:layout="@layout/fragment_login" />
+
+    <fragment
+        android:id="@+id/nav_educacional"
+        android:name="com.ecoactivity.app.ui.EducacionalFragment"
+        android:label="Educacional"
+        tools:layout="@layout/fragment_educacional"/>
 
 
 </navigation>

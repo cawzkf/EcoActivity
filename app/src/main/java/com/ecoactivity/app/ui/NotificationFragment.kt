@@ -1,6 +1,7 @@
 package com.ecoactivity.app.ui.notification
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -20,16 +21,17 @@ class NotificationFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val notificationViewModel =
-            ViewModelProvider(this).get(NotificationViewModel::class.java)
+        val notificationViewModel = ViewModelProvider(this).get(NotificationViewModel::class.java)
 
         _binding = FragmentNotificationBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val textView: TextView = binding.textNotification
-        notificationViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
+        // Observe the LiveData from the ViewModel
+        notificationViewModel.text.observe(viewLifecycleOwner) { text ->
+            Log.d("NotificationFragment", "Text updated: $text")
+            binding.textNotification.text = text
         }
+
         return root
     }
 

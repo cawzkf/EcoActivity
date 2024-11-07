@@ -10,16 +10,14 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.ecoactivity.app.MainActivity
 import com.ecoactivity.app.R
-import com.ecoactivity.app.ui.LoginViewModel
 
 class LoginFragment : Fragment() {
 
-    // ViewModel para gerenciar o estado do login
     private val viewModel: LoginViewModel by viewModels()
 
-    // Declaração dos elementos da interface
     private lateinit var editTextEmail: EditText
     private lateinit var editTextPassword: EditText
     private lateinit var buttonLogin: Button
@@ -32,54 +30,52 @@ class LoginFragment : Fragment() {
     ): View {
         val view = inflater.inflate(R.layout.fragment_login, container, false)
 
-        // Inicializar as views
         editTextEmail = view.findViewById(R.id.editTextUsername)
         editTextPassword = view.findViewById(R.id.editTextPassword)
         buttonLogin = view.findViewById(R.id.buttonLogin)
         textViewError = view.findViewById(R.id.textViewError)
         textViewRegistrationPrompt = view.findViewById(R.id.textRegistration)
 
-        // Adicionar evento para o botão de login
         buttonLogin.setOnClickListener {
             val email = editTextEmail.text.toString().trim()
             val password = editTextPassword.text.toString().trim()
 
             if (isValidInput(email, password)) {
-                viewModel.loginUser(email, password) // Executa o login
+                viewModel.loginUser(email, password)
             } else {
-                showError("Email ou senha inválidos") // Exibe erro se input for inválido
+                showError("Email ou senha inválidos")
             }
         }
 
-        // Observar o estado do login
         viewModel.loginState.observe(viewLifecycleOwner) { state ->
             when (state) {
-                is LoginViewModel.LoginState.Success -> navigateToMainActivity() // Sucesso no login
-                is LoginViewModel.LoginState.Error -> showError(state.message) // Erro no login
-                is LoginViewModel.LoginState.Loading -> buttonLogin.isEnabled = false // Desativa botão durante o login
+                is LoginViewModel.LoginState.Success -> navigateToMainActivity()
+                is LoginViewModel.LoginState.Error -> showError(state.message)
+                is LoginViewModel.LoginState.Loading -> buttonLogin.isEnabled = false
             }
+        }
+
+        val textViewRegistrationPrompt = view.findViewById<TextView>(R.id.textRegistration)
+        textViewRegistrationPrompt.setOnClickListener {
+            (activity as MainActivity).showAuthFragment(RegisterFragment()) // Chama o método na MainActivity
         }
 
         return view
     }
 
-    // Função para fazer a navegação depois do login
     private fun navigateToMainActivity() {
         val intent = Intent(activity, MainActivity::class.java)
         startActivity(intent)
         activity?.finish()
     }
 
-    // Exibe mensagem de erro
     private fun showError(message: String) {
         textViewError.text = message
         textViewError.visibility = View.VISIBLE
         buttonLogin.isEnabled = true
     }
 
-    // Função para validar os inputs de e-mail e senha
     private fun isValidInput(email: String, password: String): Boolean {
-        // Valida se o e-mail é válido e se a senha tem pelo menos 8 caracteres
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() && password.length >= 8
     }
 }

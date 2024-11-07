@@ -1,22 +1,279 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/white"
     tools:context=".ui.notification.NotificationFragment">
 
-    <TextView
-        android:id="@+id/text_notification"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Ativar Notificações -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="@color/white">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:id="@+id/textNotification"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Ativar Notificações"
+                        android:textSize="18sp"
+                        android:textColor="@color/black" />
+
+                    <Switch
+                        android:id="@+id/switch_notifications"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:thumbTint="@color/green"
+                        android:trackTint="@color/green" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Definir Hora -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="@color/white">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Definir Hora"
+                        android:textSize="18sp"
+                        android:textColor="@color/black" />
+
+                    <TimePicker
+                        android:id="@+id/timePicker"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:trackTint="@color/green"
+                        android:timePickerMode="spinner"
+                        android:layout_marginBottom="16dp" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Frequência -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="@color/white">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Frequência"
+                        android:textSize="18sp"
+                        android:textColor="@color/black" />
+
+                    <RadioGroup
+                        android:id="@+id/radioGroupFrequency"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <RadioButton
+                            android:id="@+id/radio_daily"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Diariamente"
+                            android:buttonTint="@color/green" />
+
+                        <RadioButton
+                            android:id="@+id/radio_weekly"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Semanalmente"
+                            android:buttonTint="@color/green" />
+
+                        <RadioButton
+                            android:id="@+id/radio_monthly"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Mensalmente"
+                            android:buttonTint="@color/green" />
+                    </RadioGroup>
+
+                    <CheckBox
+                        android:id="@+id/check_custom_days"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Personalizar dias da semana"
+                        android:layout_marginTop="16dp"
+                        android:textColor="@color/black" />
+
+                    <LinearLayout
+                        android:id="@+id/layoutCustomDays"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:visibility="gone"
+                        android:layout_marginBottom="16dp">
+
+                        <ToggleButton
+                            android:id="@+id/toggle_sunday"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="D"
+                            android:background="@drawable/dias_backgroud"
+                            android:textOff=""
+                            android:textOn="D"
+                            android:layout_marginEnd="8dp" />
+
+                        <ToggleButton
+                            android:id="@+id/toggle_monday"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="S"
+                            android:background="@drawable/dias_backgroud"
+                            android:textOff=""
+                            android:textOn="S"
+                            android:layout_marginEnd="8dp" />
+
+                        <ToggleButton
+                            android:id="@+id/toggle_tuesday"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="T"
+                            android:background="@drawable/dias_backgroud"
+                            android:textOff=""
+                            android:textOn="T"
+                            android:layout_marginEnd="8dp" />
+
+                        <ToggleButton
+                            android:id="@+id/toggle_wednesday"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Q"
+                            android:background="@drawable/dias_backgroud"
+                            android:textOff=""
+                            android:textOn="Q"
+                            android:layout_marginEnd="8dp" />
+
+                        <ToggleButton
+                            android:id="@+id/toggle_thursday"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Q"
+                            android:background="@drawable/dias_backgroud"
+                            android:textOff=""
+                            android:textOn="Q"
+                            android:layout_marginEnd="8dp" />
+
+                        <ToggleButton
+                            android:id="@+id/toggle_friday"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="S"
+                            android:background="@drawable/dias_backgroud"
+                            android:textOff=""
+                            android:textOn="S"
+                            android:layout_marginEnd="8dp" />
+
+                        <ToggleButton
+                            android:id="@+id/toggle_saturday"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="S"
+                            android:background="@drawable/dias_backgroud"
+                            android:textOff=""
+                            android:textOn="S"
+                            android:layout_marginEnd="8dp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Custo Máximo -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="@color/white">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Custo Máximo"
+                        android:textSize="18sp"
+                        android:textColor="@color/black" />
+
+                    <EditText
+                        android:id="@+id/editTextMaxCost"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:hint="Valor (R$)"
+                        android:inputType="numberDecimal"
+                        android:background="@drawable/input"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Consumo Máximo"
+                        android:textSize="18sp"
+                        android:layout_marginTop="16dp"
+                        android:textColor="@color/black" />
+
+                    <EditText
+                        android:id="@+id/editTextMaxConsumption"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Valor (Kw)"
+                        android:inputType="numberDecimal"
+                        android:layout_marginTop="5dp"
+                        android:background="@drawable/input" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <Button
+                android:id="@+id/buttonSave"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Salvar"
+                android:backgroundTint="@color/green"
+                android:layout_marginTop="16dp"
+                android:padding="12dp"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
+    </ScrollView>
 </FrameLayout>

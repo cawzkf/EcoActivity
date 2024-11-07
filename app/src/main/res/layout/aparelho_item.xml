@@ -3,37 +3,28 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="8dp">
+    android:padding="16dp"
+    android:background="@color/white"
+    android:layout_marginBottom="8dp">
 
     <TextView
-        android:id="@+id/column_aparelho"
+        android:id="@+id/textAparelhoType"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="Aparelho"
-        android:padding="8dp"/>
+        android:textSize="16sp"/>
 
     <TextView
-        android:id="@+id/column_tipo"
+        android:id="@+id/textAparelhoConsumption"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="Tipo"
-        android:padding="8dp"/>
+        android:textSize="16sp"/>
 
     <TextView
-        android:id="@+id/column_consumo"
+        android:id="@+id/textAparelhoCost"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="Consumo"
-        android:padding="8dp"/>
-
-    <TextView
-        android:id="@+id/column_custo"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="Custo"
-        android:padding="8dp"/>
+        android:textSize="16sp"/>
 </LinearLayout>

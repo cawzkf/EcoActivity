@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.LoginFragment">
+    tools:context=".ui.RegisterFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,10 +17,10 @@
             android:id="@+id/textViewTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Bem-vindo"
+            android:text="Cadastro"
             android:textSize="45sp"
             android:textStyle="bold"
-            android:textColor="@color/green"
+            android:textColor="@color/purple_500"
             android:layout_marginBottom="35dp"/>
 
         <EditText
@@ -51,24 +51,63 @@
             android:visibility="gone"
             android:layout_marginBottom="16dp"/>
 
+        <TextView
+            android:id="@+id/conditionLength"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mínimo 8 caracteres"
+            android:textColor="@color/error_red"
+            android:layout_marginBottom="4dp"/>
+
+        <TextView
+            android:id="@+id/conditionUppercase"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pelo menos uma letra maiúscula"
+            android:textColor="@color/error_red"
+            android:layout_marginBottom="4dp"/>
+
+        <TextView
+            android:id="@+id/conditionLowercase"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pelo menos uma letra minúscula"
+            android:textColor="@color/error_red"
+            android:layout_marginBottom="4dp"/>
+
+        <TextView
+            android:id="@+id/conditionDigit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pelo menos um dígito"
+            android:textColor="@color/error_red"
+            android:layout_marginBottom="4dp"/>
+
+        <TextView
+            android:id="@+id/conditionSpecial"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pelo menos um caractere especial"
+            android:textColor="@color/error_red"
+            android:layout_marginBottom="16dp"/>
+
         <Button
-            android:id="@+id/buttonLogin"
+            android:id="@+id/buttonRegister"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Login"
+            android:text="Registrar"
             android:background="@drawable/edittext_backgroud"
             android:padding="12dp"
             android:layout_marginBottom="16dp"/>
 
         <TextView
-            android:id="@+id/textRegistration"
+            android:id="@+id/textLoginPrompt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Não tem uma conta? Registre-se aqui!"
+            android:text="Já tem uma conta? Faça login!"
             android:textColor="@color/dark_gray"
             android:layout_marginTop="8dp"
             android:clickable="true"
             android:focusable="true"/>
     </LinearLayout>
-
 </FrameLayout>
