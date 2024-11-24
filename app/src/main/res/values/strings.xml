@@ -13,7 +13,13 @@
     <string name="menu_notificacoes">Notificações</string>
     <string name="menu_conta">Conta</string>
     <string name="menu_register">Registro</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string-array name="tipos_de_aparelhos">
+        <item>Eletrodoméstico</item>
+        <item>Segurança</item>
+        <item>Iluminação</item>
+        <item>Eletrônicos</item>
+        <item>Aquecimento</item>
+        <item>Ar-condicionado</item>
+    </string-array>
 
 </resources>

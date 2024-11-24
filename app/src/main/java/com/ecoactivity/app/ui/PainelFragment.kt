@@ -4,24 +4,21 @@ import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import java.util.Calendar
 import android.view.ViewGroup
-import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.ecoactivity.app.databinding.FragmentPainelBinding
-import com.google.firebase.database.*
-import java.util.*
+import androidx.recyclerview.widget.RecyclerView
 import com.ecoactivity.app.R
-
+import com.ecoactivity.app.databinding.FragmentPainelBinding
 
 class PainelFragment : Fragment() {
 
     private var _binding: FragmentPainelBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var viewModel: PainelViewModel // Mudança para usar PainelViewModel
+    private lateinit var viewModel: PainelViewModel
     private lateinit var adapter: AparelhoAdapter
 
     override fun onCreateView(
@@ -29,39 +26,46 @@ class PainelFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        viewModel = ViewModelProvider(requireActivity()).get(PainelViewModel::class.java)
+        // Configura o ViewModel associado ao fragmento
+        viewModel = ViewModelProvider(this).get(PainelViewModel::class.java)
 
+        // Configura o binding do layout
         _binding = FragmentPainelBinding.inflate(inflater, container, false)
-        val root: View = binding.root
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         // Configura o RecyclerView
         binding.recyclerViewAparelhos.layoutManager = LinearLayoutManager(context)
-        adapter = AparelhoAdapter(emptyList(), viewModel.tariff.value ?: 0.0)
+        adapter = AparelhoAdapter(
+            aparelhos = listOf(), // Inicialmente vazio
+            tariff = 0.0, // Tarifa padrão
+            showDeleteButton = false // Botão de exclusão desabilitado no PainelFragment
+        )
         binding.recyclerViewAparelhos.adapter = adapter
 
-        // Observe mudanças nos aparelhos
+        // Observa as alterações nos aparelhos
         viewModel.devices.observe(viewLifecycleOwner) { aparelhos ->
             adapter.updateAparelhos(aparelhos)
         }
 
-        // Observe mudanças na tarifa
+        // Observa as alterações na tarifa
         viewModel.tariff.observe(viewLifecycleOwner) { newTariff ->
-            adapter.updateTariff(newTariff) // Atualiza a tarifa no adapter
+            adapter.updateTariff(newTariff)
         }
 
-        // Configura o botão do calendário
+        // Configura o botão de calendário
         binding.calendarButton.setOnClickListener {
             showDatePickerDialog()
         }
 
-        // Observe a data selecionada
+        // Observa a data selecionada
         viewModel.selectedDate.observe(viewLifecycleOwner) { date ->
             binding.editTextFilterDate.setText(date)
-            // Atualiza o RecyclerView com os dados filtrados
-            viewModel.filterDataByDate(date)
+            viewModel.filterDataByDate(date) // Atualiza os dados com base na data
         }
-
-        return root
     }
 
     private fun showDatePickerDialog() {
@@ -70,25 +74,20 @@ class PainelFragment : Fragment() {
         val month = calendar.get(Calendar.MONTH)
         val day = calendar.get(Calendar.DAY_OF_MONTH)
 
-        // Aplica o estilo customizado
         val datePickerDialog = DatePickerDialog(
             requireContext(),
-            R.style.CustomDatePickerDialog,  // Usando o estilo customizado
             { _, selectedYear, selectedMonth, selectedDay ->
-                // Manipulação da data selecionada
-                val selectedDate = String.format("%04d-%02d-%02d", selectedYear, selectedMonth + 1, selectedDay)
+                val selectedDate = String.format(
+                    "%04d-%02d-%02d", selectedYear, selectedMonth + 1, selectedDay
+                )
                 viewModel.setSelectedDate(selectedDate)
             },
             year,
             month,
             day
         )
-
-        // Exibe o dialog
         datePickerDialog.show()
     }
-
-
 
     override fun onDestroyView() {
         super.onDestroyView()

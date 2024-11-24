@@ -7,17 +7,19 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import com.google.firebase.auth.FirebaseUser
 
 class LoginViewModel : ViewModel() {
 
-    // Autentica com Firebase
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
-    // LiveData para representar o estado do login
     private val _loginState = MutableLiveData<LoginState>()
     val loginState: LiveData<LoginState> get() = _loginState
 
-    // Função para logar com o Firebase
+    fun checkIfUserIsAuthenticated(): FirebaseUser? {
+        return auth.currentUser
+    }
+
     fun loginUser(email: String, password: String) {
         _loginState.value = LoginState.Loading
 
@@ -31,16 +33,15 @@ class LoginViewModel : ViewModel() {
             }
     }
 
-    // Tratamento de erros de login
     private fun handleLoginError(exception: Exception?): String {
         return when (exception) {
             is FirebaseAuthInvalidUserException -> "Usuário não encontrado. Verifique seu email ou crie uma conta."
-            is FirebaseAuthInvalidCredentialsException -> "Senha Inválida. Tente Novamente."
+            is FirebaseAuthInvalidCredentialsException -> "Senha inválida. Tente novamente."
+            is FirebaseAuthException -> "Erro ao tentar autenticar. Tente novamente mais tarde."
             else -> "Erro desconhecido. Tente novamente mais tarde."
         }
     }
 
-    // Classe selada para representar os estados possíveis de login
     sealed class LoginState {
         object Success : LoginState()
         data class Error(val message: String) : LoginState()

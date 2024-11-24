@@ -17,9 +17,6 @@
             android:icon="@drawable/aparelhos"
             android:title="@string/menu_aparelhos" />
         <item
-            android:id="@+id/nav_educacional"
-            android:title="@string/menu_educacional" />
-        <item
             android:id="@+id/nav_notificacoes"
             android:icon="@drawable/notification"
             android:title="@string/menu_notificacoes" />

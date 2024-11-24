@@ -1,63 +1,51 @@
 package com.ecoactivity.app
 
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.Menu
 import android.view.MenuItem
+import androidx.navigation.ui.setupActionBarWithNavController
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
-import androidx.appcompat.app.AppCompatActivity
-import com.ecoactivity.app.R
 import com.ecoactivity.app.databinding.ActivityMainBinding
 import com.ecoactivity.app.ui.LoginFragment
-import com.ecoactivity.app.ui.NovoFragment // Certifique-se de importar seu NovoFragment
+import com.ecoactivity.app.ui.NovoFragment
 import com.google.android.material.navigation.NavigationView
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
     private lateinit var auth: FirebaseAuth
     private lateinit var navController: NavController
-
-    private val authStateListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
-        val user = firebaseAuth.currentUser
-
-        if (user == null) {
-            // Mostra o fragmento de login ou registro
-            showAuthFragment(LoginFragment())
-        } else {
-            // O usuário está autenticado, navegue para a tela inicial
-            navController.navigate(R.id.nav_painel)
-            findViewById<View>(R.id.fragment_container).visibility = View.GONE // Esconde o container de autenticação
-        }
-    }
+    private lateinit var appBarConfiguration: AppBarConfiguration
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // Inflar o layout principal
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Inicializar FirebaseAuth
         auth = FirebaseAuth.getInstance()
-        auth.addAuthStateListener(authStateListener)
 
+        // Configurar a Toolbar
         setSupportActionBar(binding.appBarMain.toolbar)
 
+        // Configurar o DrawerLayout com o NavigationView
         val drawerLayout: DrawerLayout = binding.drawerLayout
         val navView: NavigationView = binding.navView
-
         navController = findNavController(R.id.nav_host_fragment_content_main)
 
+        // Configurar o AppBarConfiguration com os destinos principais (fragments do menu)
         appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.nav_painel,
@@ -70,78 +58,73 @@ class MainActivity : AppCompatActivity() {
             drawerLayout
         )
 
+        // Vincular a Toolbar com o NavController
         setupActionBarWithNavController(navController, appBarConfiguration)
+
+        // Configurar o NavigationView com o NavController
         navView.setupWithNavController(navController)
 
-        navView.setNavigationItemSelectedListener { menuItem ->
-            if (auth.currentUser == null) {
-                Snackbar.make(binding.drawerLayout, "Você precisa estar logado para acessar essa área", Snackbar.LENGTH_SHORT).show()
-                return@setNavigationItemSelectedListener false
-            }
+        // Verificar autenticação e mostrar LoginFragment se necessário
+        checkAuthenticationState()
+    }
 
-            // Navegar para o fragmento correspondente ao item clicado
-            when (menuItem.itemId) {
-                R.id.nav_painel -> {
-                    navController.navigate(R.id.nav_painel)
-                }
-                R.id.nav_graficos -> {
-                    navController.navigate(R.id.nav_graficos)
-                }
-                R.id.nav_aparelhos -> {
-                    navController.navigate(R.id.nav_aparelhos)
-                }
-                R.id.nav_notificacoes -> {
-                    navController.navigate(R.id.nav_notificacoes)
-                }
-                R.id.nav_conta -> {
-                    navController.navigate(R.id.nav_conta)
-                }
-                R.id.nav_educacional -> {
-                    navController.navigate(R.id.nav_educacional)
-                }
-                else -> return@setNavigationItemSelectedListener false
-            }
-            drawerLayout.closeDrawers()
-            true
+    // Verifica se o usuário está autenticado e exibe o LoginFragment se necessário
+    private fun checkAuthenticationState() {
+        val currentUser = auth.currentUser
+        if (currentUser == null) {
+            // Mostra o LoginFragment no contêiner de autenticação
+            showAuthFragment(LoginFragment())
         }
     }
 
+    // Exibe um fragmento de autenticação no contêiner dedicado
     fun showAuthFragment(fragment: Fragment) {
-        findViewById<View>(R.id.fragment_container).visibility = View.VISIBLE // Torna o container visível
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, fragment) // Mostra o fragmento escolhido (Login ou Register)
-            .commit()
-        findViewById<View>(R.id.nav_host_fragment_content_main).visibility = View.GONE // Esconde o nav_host_fragment
+        val transaction = supportFragmentManager.beginTransaction()
+        transaction.replace(R.id.auth_fragment_container, fragment)
+        transaction.commit()
+        findViewById<View>(R.id.auth_fragment_container).visibility = View.VISIBLE
+    }
+
+    // Remove o fragmento de autenticação e oculta o contêiner
+    fun hideAuthFragment() {
+        val fragment = supportFragmentManager.findFragmentById(R.id.auth_fragment_container)
+        if (fragment != null) {
+            supportFragmentManager.beginTransaction().remove(fragment).commit()
+        }
+        findViewById<View>(R.id.auth_fragment_container).visibility = View.GONE
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        // Inflar o menu da Toolbar
         menuInflater.inflate(R.menu.main, menu)
         return true
     }
 
-
-    private fun showAddDeviceDialog() {
-        val dialog = NovoFragment()
-        dialog.show(supportFragmentManager, "AddDeviceDialog")
-    }
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.action_settings -> {
-                showAddDeviceDialog() // Mostra o modal de novo aparelho
+            R.id.action_add -> { // Tratando o clique no botão "+"
+                openAddDeviceModal()
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
     }
 
-
-
-    override fun onSupportNavigateUp(): Boolean {
-        return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+    /**
+     * Abre o modal do NovoFragment.
+     */
+    private fun openAddDeviceModal() {
+        val dialog: DialogFragment = NovoFragment()
+        dialog.show(supportFragmentManager, "NovoFragment")
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        auth.removeAuthStateListener(authStateListener)
+    override fun onSupportNavigateUp(): Boolean {
+        // Permite que o botão de navegação funcione corretamente
+        return NavigationUI.navigateUp(navController, appBarConfiguration) || super.onSupportNavigateUp()
+    }
+
+    fun logoutUser() {
+        auth.signOut()
+        showAuthFragment(LoginFragment()) // Exibe login após o logout
     }
 }

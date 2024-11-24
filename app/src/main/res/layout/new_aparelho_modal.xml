@@ -10,7 +10,8 @@
         android:layout_width="332dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="7dp">
+        android:padding="7dp"
+        android:layout_margin="10dp">
 
         <TextView
             android:layout_width="wrap_content"
@@ -26,25 +27,27 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Tipo de Aparelho"
+            android:layout_marginBottom="5dp"
             android:textColor="@color/black"
             android:textSize="16sp" />
 
         <Spinner
-            android:id="@+id/spinnerDeviceType"
+            android:id="@+id/spinnerTipoAparelho"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:background="@drawable/input" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
+            android:layout_marginBottom="5dp"
             android:text="Consumo (kWh)"
             android:textColor="@color/black"
             android:textSize="16sp" />
 
         <EditText
-            android:id="@+id/editTextConsumption"
+            android:id="@+id/editaConsumo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/input"
@@ -78,17 +81,17 @@
                     android:orientation="horizontal">
 
                     <Button
-                        android:id="@+id/buttonDecrease"
+                        android:id="@+id/botaoDiminuir"
                         android:layout_width="45dp"
                         android:layout_height="45dp"
-                        android:background="@color/button_color"
+                        android:background="@drawable/side_nav_bar"
                         android:text="-"
                         android:textColor="@android:color/white" />
 
                     <EditText
-                        android:id="@+id/editTextQuantity"
+                        android:id="@+id/editaQuantidade"
                         android:layout_width="100dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="40dp"
                         android:layout_marginHorizontal="15dp"
                         android:background="@drawable/input"
                         android:focusable="false"
@@ -98,10 +101,10 @@
                         android:textSize="14sp" />
 
                     <Button
-                        android:id="@+id/buttonIncrease"
+                        android:id="@+id/botaoAumentar"
                         android:layout_width="45dp"
                         android:layout_height="45dp"
-                        android:background="@color/button_color"
+                        android:background="@drawable/side_nav_bar"
                         android:padding="8dp"
                         android:text="+"
                         android:textColor="@android:color/white" />
@@ -123,22 +126,23 @@
                     android:textSize="16sp" />
 
                 <EditText
-                    android:id="@+id/editTextRate"
+                    android:id="@+id/editaTaxa"
                     android:layout_width="90dp"
                     android:layout_height="wrap_content"
                     android:background="@drawable/input"
                     android:gravity="center"
+                    android:layout_marginTop="01dp"
                     android:hint="0.00"
                     android:inputType="numberDecimal" />
             </LinearLayout>
         </LinearLayout>
 
         <Button
-            android:id="@+id/buttonAddDevice"
+            android:id="@+id/botaoAdicionarAparelho"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:background="@color/button_color"
+            android:background="@drawable/side_nav_bar"
             android:text="Adicionar Aparelho"
             android:textColor="@android:color/white" />
     </LinearLayout>

@@ -19,9 +19,9 @@
 
     <fragment
         android:id="@+id/nav_aparelhos"
-        android:name="com.ecoactivity.app.ui.AparelhosFragment"
+        android:name="com.ecoactivity.app.ui.AparelhoFragment"
         android:label="@string/menu_aparelhos"
-        tools:layout="@layout/fragment_aparelhos" />
+        tools:layout="@layout/fragment_aparelho" />
 
     <fragment
         android:id="@+id/nav_notificacoes"

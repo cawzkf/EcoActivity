@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     tools:context=".ui.RegisterFragment">
 
+    <!-- Layout principal com orientações verticais -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -13,6 +14,7 @@
         android:background="@color/white"
         android:gravity="center">
 
+        <!-- Título do formulário -->
         <TextView
             android:id="@+id/textViewTitle"
             android:layout_width="wrap_content"
@@ -20,9 +22,10 @@
             android:text="Cadastro"
             android:textSize="45sp"
             android:textStyle="bold"
-            android:textColor="@color/purple_500"
-            android:layout_marginBottom="35dp"/>
+            android:textColor="@color/green"
+            android:layout_marginBottom="35dp" />
 
+        <!-- Campo de email -->
         <EditText
             android:id="@+id/editTextUsername"
             android:layout_width="match_parent"
@@ -31,8 +34,9 @@
             android:inputType="textEmailAddress"
             android:padding="12dp"
             android:background="@drawable/edittext_backgroud"
-            android:layout_marginBottom="16dp"/>
+            android:layout_marginBottom="16dp" />
 
+        <!-- Campo de senha -->
         <EditText
             android:id="@+id/editTextPassword"
             android:layout_width="match_parent"
@@ -41,39 +45,25 @@
             android:inputType="textPassword"
             android:padding="12dp"
             android:background="@drawable/edittext_backgroud"
-            android:layout_marginBottom="16dp"/>
+            android:layout_marginBottom="16dp" />
 
+        <!-- Mensagem de erro -->
         <TextView
             android:id="@+id/textViewError"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/error_red"
             android:visibility="gone"
-            android:layout_marginBottom="16dp"/>
+            android:layout_marginBottom="16dp" />
 
+        <!-- Critérios de senha -->
         <TextView
             android:id="@+id/conditionLength"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Mínimo 8 caracteres"
             android:textColor="@color/error_red"
-            android:layout_marginBottom="4dp"/>
-
-        <TextView
-            android:id="@+id/conditionUppercase"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Pelo menos uma letra maiúscula"
-            android:textColor="@color/error_red"
-            android:layout_marginBottom="4dp"/>
-
-        <TextView
-            android:id="@+id/conditionLowercase"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Pelo menos uma letra minúscula"
-            android:textColor="@color/error_red"
-            android:layout_marginBottom="4dp"/>
+            android:layout_marginBottom="4dp" />
 
         <TextView
             android:id="@+id/conditionDigit"
@@ -81,7 +71,23 @@
             android:layout_height="wrap_content"
             android:text="Pelo menos um dígito"
             android:textColor="@color/error_red"
-            android:layout_marginBottom="4dp"/>
+            android:layout_marginBottom="4dp" />
+
+        <TextView
+            android:id="@+id/conditionUppercase"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pelo menos uma letra maiúscula"
+            android:textColor="@color/error_red"
+            android:layout_marginBottom="4dp" />
+
+        <TextView
+            android:id="@+id/conditionLowercase"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pelo menos uma letra minúscula"
+            android:textColor="@color/error_red"
+            android:layout_marginBottom="4dp" />
 
         <TextView
             android:id="@+id/conditionSpecial"
@@ -89,8 +95,9 @@
             android:layout_height="wrap_content"
             android:text="Pelo menos um caractere especial"
             android:textColor="@color/error_red"
-            android:layout_marginBottom="16dp"/>
+            android:layout_marginBottom="16dp" />
 
+        <!-- Botão de registro -->
         <Button
             android:id="@+id/buttonRegister"
             android:layout_width="match_parent"
@@ -98,8 +105,9 @@
             android:text="Registrar"
             android:background="@drawable/edittext_backgroud"
             android:padding="12dp"
-            android:layout_marginBottom="16dp"/>
+            android:layout_marginBottom="16dp" />
 
+        <!-- Link para a tela de login -->
         <TextView
             android:id="@+id/textLoginPrompt"
             android:layout_width="wrap_content"
@@ -108,6 +116,6 @@
             android:textColor="@color/dark_gray"
             android:layout_marginTop="8dp"
             android:clickable="true"
-            android:focusable="true"/>
+            android:focusable="true" />
     </LinearLayout>
 </FrameLayout>
