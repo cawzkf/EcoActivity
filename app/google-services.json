@@ -1,8 +1,9 @@
 {
   "project_info": {
     "project_number": "576114998125",
+    "firebase_url": "https://ecoactivity-6cf39-default-rtdb.asia-southeast1.firebasedatabase.app",
     "project_id": "ecoactivity-6cf39",
-    "storage_bucket": "ecoactivity-6cf39.appspot.com"
+    "storage_bucket": "ecoactivity-6cf39.firebasestorage.app"
   },
   "client": [
     {
