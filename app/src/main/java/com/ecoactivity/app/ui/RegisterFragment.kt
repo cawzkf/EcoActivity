@@ -15,7 +15,6 @@ import com.ecoactivity.app.R
 /**
  * Fragmento para registro de novos usuários.
  */
-
 class RegisterFragment : Fragment() {
 
     private lateinit var registerViewModel: RegisterViewModel // ViewModel para gerenciar lógica do registro

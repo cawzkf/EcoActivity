@@ -7,6 +7,7 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.ecoactivity.app.R
+import com.google.firebase.firestore.FirebaseFirestore
 
 class AparelhoAdapter(
     private var aparelhos: List<Aparelho>,
@@ -15,6 +16,7 @@ class AparelhoAdapter(
     private val onDeleteClick: ((Aparelho) -> Unit)? = null
 ) : RecyclerView.Adapter<AparelhoAdapter.ViewHolder>() {
 
+    private val firestore = FirebaseFirestore.getInstance()
     private val selectedItems = mutableSetOf<Aparelho>()
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -39,6 +41,7 @@ class AparelhoAdapter(
         // Botão de exclusão
         holder.deleteButton.visibility = if (showDeleteButton) View.VISIBLE else View.GONE
         holder.deleteButton.setOnClickListener {
+            deleteAparelhoFromFirestore(aparelho)
             onDeleteClick?.invoke(aparelho)
         }
 
@@ -47,6 +50,9 @@ class AparelhoAdapter(
         holder.itemView.setOnClickListener {
             toggleSelection(aparelho)
         }
+
+        // Salva ou atualiza o aparelho no Firestore
+        saveOrUpdateAparelhoInFirestore(aparelho)
     }
 
     override fun getItemCount() = aparelhos.size
@@ -81,5 +87,37 @@ class AparelhoAdapter(
             selectedItems.add(aparelho)
         }
         notifyDataSetChanged()
+    }
+
+    /**
+     * Salva ou atualiza um aparelho no Firestore.
+     */
+    private fun saveOrUpdateAparelhoInFirestore(aparelho: Aparelho) {
+        val userId = "user_id_example" // Substitua pelo ID real do usuário logado
+        val collectionRef = firestore.collection("users").document(userId).collection("aparelhos")
+
+        collectionRef.document(aparelho.id).set(aparelho)
+            .addOnSuccessListener {
+                // Log ou mensagem de sucesso (opcional)
+            }
+            .addOnFailureListener { exception ->
+                // Log ou mensagem de erro
+            }
+    }
+
+    /**
+     * Remove um aparelho do Firestore.
+     */
+    private fun deleteAparelhoFromFirestore(aparelho: Aparelho) {
+        val userId = "user_id_example" // Substitua pelo ID real do usuário logado
+        val collectionRef = firestore.collection("users").document(userId).collection("aparelhos")
+
+        collectionRef.document(aparelho.id).delete()
+            .addOnSuccessListener {
+                // Log ou mensagem de sucesso (opcional)
+            }
+            .addOnFailureListener { exception ->
+                // Log ou mensagem de erro
+            }
     }
 }

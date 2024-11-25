@@ -5,6 +5,7 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.navigation.ui.setupActionBarWithNavController
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.DialogFragment
@@ -19,6 +20,7 @@ import com.ecoactivity.app.ui.LoginFragment
 import com.ecoactivity.app.ui.NovoFragment
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class MainActivity : AppCompatActivity() {
 
@@ -72,10 +74,38 @@ class MainActivity : AppCompatActivity() {
     private fun checkAuthenticationState() {
         val currentUser = auth.currentUser
         if (currentUser == null) {
-            // Mostra o LoginFragment no contêiner de autenticação
+            // Redireciona para LoginFragment caso o usuário não esteja autenticado
             showAuthFragment(LoginFragment())
+        } else {
+            // Verifica se os dados do usuário existem no Firestore
+            val userId = currentUser.uid
+            val firestore = FirebaseFirestore.getInstance()
+
+            firestore.collection("users").document(userId).get()
+                .addOnSuccessListener { document ->
+                    if (!document.exists()) {
+                        // Se os dados não existirem, cria automaticamente um documento no Firestore
+                        val userData = mapOf(
+                            "id" to userId,
+                            "email" to currentUser.email,
+                            "dateCreated" to System.currentTimeMillis(),
+                            "aparelhos" to emptyMap<String, Any>() // Adicione outros campos, se necessário
+                        )
+                        firestore.collection("users").document(userId).set(userData)
+                            .addOnSuccessListener {
+                                Toast.makeText(this, "Dados sincronizados com sucesso!", Toast.LENGTH_SHORT).show()
+                            }
+                            .addOnFailureListener {
+                                Toast.makeText(this, "Erro ao sincronizar dados no Firestore.", Toast.LENGTH_SHORT).show()
+                            }
+                    }
+                }
+                .addOnFailureListener {
+                    Toast.makeText(this, "Erro ao verificar dados do Firestore.", Toast.LENGTH_SHORT).show()
+                }
         }
     }
+
 
     // Exibe um fragmento de autenticação no contêiner dedicado
     fun showAuthFragment(fragment: Fragment) {

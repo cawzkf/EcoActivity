@@ -1,7 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Permissões necessárias -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
     <application
         android:allowBackup="true"
@@ -11,9 +14,17 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Ecoactivity"
-        tools:targetApi="31">
+        android:theme="@style/Theme.Ecoactivity">
 
+        <!-- Configuração para notificações do Firebase -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/icon_eco_background" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="default_channel" />
+
+        <!-- Serviço de mensagens Firebase -->
         <service
             android:name=".MyFirebaseMessagingService"
             android:exported="true">
@@ -22,6 +33,7 @@
             </intent-filter>
         </service>
 
+        <!-- Atividade principal -->
         <activity
             android:name=".MainActivity"
             android:exported="true"

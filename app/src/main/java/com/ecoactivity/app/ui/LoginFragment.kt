@@ -9,13 +9,13 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.ecoactivity.app.MainActivity
 import com.ecoactivity.app.R
-import com.google.firebase.auth.FirebaseAuth
 
 class LoginFragment : Fragment() {
 
-    private lateinit var auth: FirebaseAuth
+    private lateinit var loginViewModel: LoginViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -23,7 +23,7 @@ class LoginFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_login, container, false)
 
-        auth = FirebaseAuth.getInstance()
+        loginViewModel = ViewModelProvider(this)[LoginViewModel::class.java]
 
         val emailEditText = view.findViewById<EditText>(R.id.editTextUsername)
         val passwordEditText = view.findViewById<EditText>(R.id.editTextPassword)
@@ -37,20 +37,26 @@ class LoginFragment : Fragment() {
             if (email.isEmpty() || password.isEmpty()) {
                 Toast.makeText(requireContext(), "Preencha todos os campos!", Toast.LENGTH_SHORT).show()
             } else {
-                auth.signInWithEmailAndPassword(email, password)
-                    .addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            // Fechar fragmento de autenticação
-                            (activity as MainActivity).hideAuthFragment()
-                        } else {
-                            Toast.makeText(requireContext(), "Falha no login. Tente novamente!", Toast.LENGTH_SHORT).show()
-                        }
-                    }
+                loginViewModel.loginUser(email, password)
+            }
+        }
+
+        loginViewModel.loginState.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is LoginViewModel.LoginState.Loading -> {
+                    Toast.makeText(requireContext(), "Entrando...", Toast.LENGTH_SHORT).show()
+                }
+                is LoginViewModel.LoginState.Success -> {
+                    // Fecha o fragmento e acessa a MainActivity
+                    (activity as MainActivity).hideAuthFragment()
+                }
+                is LoginViewModel.LoginState.Error -> {
+                    Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
+                }
             }
         }
 
         registerTextView.setOnClickListener {
-            // Exibe o RegisterFragment
             (activity as MainActivity).showAuthFragment(RegisterFragment())
         }
 

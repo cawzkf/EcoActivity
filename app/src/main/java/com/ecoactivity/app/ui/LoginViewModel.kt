@@ -26,7 +26,8 @@ class LoginViewModel : ViewModel() {
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    _loginState.value = LoginState.Success
+                    val userId = auth.currentUser?.uid // ID do usuário autenticado
+                    _loginState.value = LoginState.Success(userId)
                 } else {
                     _loginState.value = LoginState.Error(handleLoginError(task.exception))
                 }
@@ -43,7 +44,7 @@ class LoginViewModel : ViewModel() {
     }
 
     sealed class LoginState {
-        object Success : LoginState()
+        data class Success(val userId: String?) : LoginState()
         data class Error(val message: String) : LoginState()
         object Loading : LoginState()
     }

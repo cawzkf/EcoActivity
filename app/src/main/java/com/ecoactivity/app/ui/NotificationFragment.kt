@@ -1,21 +1,11 @@
 package com.ecoactivity.app.ui.notification
 
-import android.Manifest
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.content.Context
-import android.content.pm.PackageManager
-import android.os.Build
+import android.app.TimePickerDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.app.ActivityCompat
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.ecoactivity.app.R
@@ -27,103 +17,94 @@ class NotificationFragment : Fragment() {
     private var _binding: FragmentNotificationBinding? = null
     private val binding get() = _binding!!
 
-    // Constantes para permissão e canal de notificação
-    companion object {
-        private const val CHANNEL_ID = "ecoactivity_channel"
-        private const val PERMISSION_REQUEST_CODE = 1001
-    }
+    private lateinit var viewModel: NotificationViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val notificationViewModel = ViewModelProvider(this).get(NotificationViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(NotificationViewModel::class.java)
 
         _binding = FragmentNotificationBinding.inflate(inflater, container, false)
-        val root: View = binding.root
+        val root = binding.root
 
-        // Observe o LiveData do ViewModel
-        notificationViewModel.text.observe(viewLifecycleOwner) { text ->
-            Log.d("NotificationFragment", "Texto atualizado: $text")
-            binding.textNotification.text = text
-        }
-
-        // Crie o canal de notificação
-        createNotificationChannel()
-
-        // Configurar clique no botão para enviar notificação
-        binding.buttonSave.setOnClickListener {
-            sendTestNotification()
-        }
+        setupObservers()
+        setupListeners()
 
         return root
+    }
+
+    private fun setupObservers() {
+        viewModel.notificationEnabled.observe(viewLifecycleOwner) { isEnabled ->
+            binding.switchNotifications.isChecked = isEnabled
+        }
+
+        viewModel.timeSelected.observe(viewLifecycleOwner) { time ->
+            binding.timePicker.hour = time.first
+            binding.timePicker.minute = time.second
+        }
+
+        viewModel.frequency.observe(viewLifecycleOwner) { frequency ->
+            when (frequency) {
+                "Diariamente" -> binding.radioGroupFrequency.check(R.id.radio_daily)
+                "Semanalmente" -> binding.radioGroupFrequency.check(R.id.radio_weekly)
+                "Mensalmente" -> binding.radioGroupFrequency.check(R.id.radio_monthly)
+            }
+        }
+
+        viewModel.customDays.observe(viewLifecycleOwner) { days ->
+            binding.layoutCustomDays.visibility =
+                if (days.isNotEmpty()) View.VISIBLE else View.GONE
+            // Atualize o estado dos ToggleButtons aqui
+        }
+    }
+
+    private fun setupListeners() {
+        binding.switchNotifications.setOnCheckedChangeListener { _, isChecked ->
+            val currentHour = binding.timePicker.hour
+            val currentMinute = binding.timePicker.minute
+            val frequency = when (binding.radioGroupFrequency.checkedRadioButtonId) {
+                R.id.radio_daily -> "Diariamente"
+                R.id.radio_weekly -> "Semanalmente"
+                R.id.radio_monthly -> "Mensalmente"
+                else -> "Diariamente"
+            }
+
+            val customDays = mutableSetOf<String>()
+            if (binding.checkCustomDays.isChecked) {
+                if (binding.toggleSunday.isChecked) customDays.add("Domingo")
+                if (binding.toggleMonday.isChecked) customDays.add("Segunda")
+                if (binding.toggleTuesday.isChecked) customDays.add("Terça")
+                if (binding.toggleWednesday.isChecked) customDays.add("Quarta")
+                if (binding.toggleThursday.isChecked) customDays.add("Quinta")
+                if (binding.toggleFriday.isChecked) customDays.add("Sexta")
+                if (binding.toggleSaturday.isChecked) customDays.add("Sábado")
+            }
+
+            viewModel.saveNotificationSettings(
+                requireContext(),
+                isEnabled = isChecked,
+                hour = currentHour,
+                minute = currentMinute,
+                frequency = frequency,
+                days = customDays
+            )
+
+            Toast.makeText(
+                requireContext(),
+                "Configurações salvas com sucesso!",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+
+        binding.checkCustomDays.setOnCheckedChangeListener { _, isChecked ->
+            binding.layoutCustomDays.visibility = if (isChecked) View.VISIBLE else View.GONE
+        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    // Método para criar um canal de notificação (obrigatório para Android 8+)
-    private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = "EcoActivity Notifications"
-            val descriptionText = "Canal para notificações do EcoActivity"
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
-                description = descriptionText
-            }
-            val notificationManager: NotificationManager =
-                requireContext().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
-        }
-    }
-
-    // Método para enviar uma notificação de teste
-    private fun sendTestNotification() {
-        // Verificar permissão antes de enviar notificação
-        if (ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.POST_NOTIFICATIONS
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            // Solicitar permissão ao usuário
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                arrayOf(Manifest.permission.POST_NOTIFICATIONS),
-                PERMISSION_REQUEST_CODE
-            )
-            return
-        }
-
-        // Construir e enviar a notificação
-        val builder = NotificationCompat.Builder(requireContext(), CHANNEL_ID)
-            .setSmallIcon(R.drawable.icon_eco_black_background) // Ícone da notificação
-            .setContentTitle("EcoActivity")
-            .setContentText("Essa é uma notificação de teste!")
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-
-        with(NotificationManagerCompat.from(requireContext())) {
-            notify(1, builder.build()) // Envia a notificação
-        }
-    }
-
-    // Lidar com a resposta do usuário à solicitação de permissão
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == PERMISSION_REQUEST_CODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permissão concedida, envie a notificação
-                sendTestNotification()
-            } else {
-                // Permissão negada, informe ao usuário
-                Toast.makeText(requireContext(), "Permissão para enviar notificações foi negada", Toast.LENGTH_SHORT).show()
-            }
-        }
     }
 }

@@ -56,7 +56,7 @@ dependencies {
     implementation(libs.firebase.database)
     implementation(libs.firebase.auth.ktx)
     implementation(libs.firebase.messaging.ktx)
-
+    implementation(libs.firebase.firestore.ktx)
     // Hilt
     implementation(libs.hilt.android)
 

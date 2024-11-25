@@ -3,6 +3,7 @@ package com.ecoactivity.app.viewmodel
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 /**
  * ViewModel para gerenciamento de conta do usuário.
@@ -10,6 +11,7 @@ import com.google.firebase.auth.FirebaseAuth
 class ContaViewModel : ViewModel() {
 
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
 
     /**
      * Obtém o usuário atual autenticado.
@@ -55,14 +57,22 @@ class ContaViewModel : ViewModel() {
     }
 
     /**
-     * Atualiza o e-mail do usuário.
+     * Atualiza o e-mail do usuário e salva no Firestore.
      */
     fun updateEmail(newEmail: String, callback: (Boolean, String?) -> Unit) {
         val currentUser = auth.currentUser
         if (currentUser != null) {
             currentUser.updateEmail(newEmail).addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    callback(true, null)
+                    // Atualizar o e-mail no Firestore
+                    val userId = currentUser.uid
+                    firestore.collection("users").document(userId).update("email", newEmail)
+                        .addOnSuccessListener {
+                            callback(true, null)
+                        }
+                        .addOnFailureListener { exception ->
+                            callback(false, exception.message)
+                        }
                 } else {
                     callback(false, task.exception?.message)
                 }

@@ -4,92 +4,83 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
+import com.google.firebase.firestore.FirebaseFirestore
 
 class NovoViewModel : ViewModel() {
 
-    // Lista de aparelhos cadastrados
-    private val _devices = MutableLiveData<List<Aparelho>?>()
-    val devices: LiveData<List<Aparelho>?> get() = _devices
+    private val firestore = FirebaseFirestore.getInstance()
+    private val auth = FirebaseAuth.getInstance()
 
-    // Tarifa utilizada no cálculo do custo
+    private val _devices = MutableLiveData<List<Aparelho>>()
+    val devices: LiveData<List<Aparelho>> get() = _devices
+
     private val _tariff = MutableLiveData<Double>()
     val tariff: LiveData<Double> get() = _tariff
 
-    private val database: DatabaseReference = FirebaseDatabase.getInstance().getReference("aparelhos")
-    private val userId: String? = FirebaseAuth.getInstance().currentUser?.uid
-
     init {
-        // Inicializa com uma lista vazia de aparelhos
-        _devices.value = listOf()
-        _tariff.value = 0.0  // Inicializa a tarifa com 0
-        loadAparelhosFromFirebase()  // Carregar os aparelhos do Firebase no início
+        loadAparelhosFromFirestore()
+        loadTariffFromFirestore()
     }
 
-    // Função para carregar aparelhos do Firebase
-    private fun loadAparelhosFromFirebase() {
-        if (userId == null) return // Retorna se o usuário não estiver autenticado
+    /**
+     * Carrega os aparelhos do Firestore.
+     */
+    private fun loadAparelhosFromFirestore() {
+        val userId = auth.currentUser?.uid ?: return
 
-        database.child(userId).child("aparelhos").addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val aparelhosList = mutableListOf<Aparelho>()
-                for (dataSnapshot in snapshot.children) {
-                    val aparelho = dataSnapshot.getValue(Aparelho::class.java)
-                    aparelho?.let { aparelhosList.add(it) }
-                }
-                _devices.value = aparelhosList // Atualiza o LiveData com a lista recuperada
-            }
+        firestore.collection("users")
+            .document(userId)
+            .collection("aparelhos")
+            .addSnapshotListener { snapshot, e ->
+                if (e != null) return@addSnapshotListener
 
-            override fun onCancelled(error: DatabaseError) {
-                // Lida com erros, como problemas de conexão ou permissões
-                // Adicione logs ou notificações se necessário
+                val aparelhosList = snapshot?.documents?.mapNotNull { document ->
+                    document.toObject(Aparelho::class.java)?.copy(id = document.id)
+                } ?: listOf()
+
+                _devices.value = aparelhosList
             }
-        })
     }
 
-    // Função para adicionar um aparelho ao Firebase e atualizar o LiveData
+    /**
+     * Adiciona um aparelho ao Firestore.
+     */
     fun addAparelho(aparelho: Aparelho) {
-        if (userId == null) return // Retorna se o usuário não estiver autenticado
+        val userId = auth.currentUser?.uid ?: return
 
-        val userAparelhosRef = database.child(userId).child("aparelhos")
-        val deviceId = userAparelhosRef.push().key ?: return
+        val newDoc = firestore.collection("users")
+            .document(userId)
+            .collection("aparelhos")
+            .document()
 
-        val novoAparelho = aparelho.copy(id = deviceId) // Garante que o ID seja único
-        userAparelhosRef.child(deviceId).setValue(novoAparelho).addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                val updatedList = _devices.value?.toMutableList() ?: mutableListOf()
-                updatedList.add(novoAparelho)
-                _devices.value = updatedList // Atualiza o LiveData local
+        val novoAparelho = aparelho.copy(id = newDoc.id)
+        newDoc.set(novoAparelho)
+    }
+
+    /**
+     * Carrega a tarifa do Firestore.
+     */
+    private fun loadTariffFromFirestore() {
+        val userId = auth.currentUser?.uid ?: return
+
+        firestore.collection("users")
+            .document(userId)
+            .get()
+            .addOnSuccessListener { document ->
+                val tariff = document.getDouble("tariff") ?: 0.0
+                _tariff.value = tariff
             }
-        }
     }
 
-    // Função para excluir um aparelho específico
-    fun deleteAparelho(aparelho: Aparelho) {
-        if (userId == null) return // Retorna se o usuário não estiver autenticado
-
-        // Remove do Firebase
-        database.child(userId).child("aparelhos").child(aparelho.id).removeValue().addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                // Atualiza o LiveData local
-                val updatedList = _devices.value?.toMutableList() // Verifica se _devices.value não é nulo
-                updatedList?.let {
-                    it.remove(aparelho)
-                    _devices.value = it
-                }
-            }
-        }
-    }
-
-    // Função para excluir múltiplos aparelhos
-    fun deleteAparelhos(aparelhos: List<Aparelho>) {
-        for (aparelho in aparelhos) {
-            deleteAparelho(aparelho)
-        }
-    }
-
-    // Função para atualizar a tarifa
+    /**
+     * Define a tarifa no Firestore.
+     */
     fun setTariff(newTariff: Double) {
+        val userId = auth.currentUser?.uid ?: return
         _tariff.value = newTariff
+
+        firestore.collection("users")
+            .document(userId)
+            .update("tariff", newTariff)
     }
 }

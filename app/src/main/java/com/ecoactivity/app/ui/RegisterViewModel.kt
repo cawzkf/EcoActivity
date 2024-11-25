@@ -9,8 +9,7 @@ import com.ecoactivity.app.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.firestore.FirebaseFirestore
 
 /**
  * ViewModel para gerenciar o registro de novos usuários.
@@ -18,8 +17,7 @@ import com.google.firebase.database.FirebaseDatabase
 class RegisterViewModel : ViewModel() {
 
     private val auth: FirebaseAuth = FirebaseAuth.getInstance() // Instância do Firebase Authentication
-    private val databaseRef: DatabaseReference =
-        FirebaseDatabase.getInstance().reference.child("users") // Referência ao nó "users" no Realtime Database
+    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance() // Instância do Firestore
 
     private val _registrationError = MutableLiveData<String>() // Mensagem de erro de registro
     val registrationError: LiveData<String> get() = _registrationError
@@ -50,7 +48,7 @@ class RegisterViewModel : ViewModel() {
             if (task.isSuccessful) {
                 val user = auth.currentUser
                 user?.let {
-                    saveUserToDatabase(it.uid, email)
+                    saveUserToFirestore(Usuarios(it.uid, email, System.currentTimeMillis())) // Salva usando a classe Usuarios
                     _registrationSuccess.value = true
                 }
             } else {
@@ -60,21 +58,19 @@ class RegisterViewModel : ViewModel() {
     }
 
     /**
-     * Salva os dados do usuário no Realtime Database.
+     * Salva os dados do usuário no Firestore.
      */
-    private fun saveUserToDatabase(userId: String, email: String) {
-        val userData = mapOf(
-            "id" to userId,
-            "email" to email,
-            "dateCreated" to System.currentTimeMillis(),
-            "aparelhos" to emptyMap<String, Any>()
-        )
-
-        databaseRef.child(userId).setValue(userData).addOnCompleteListener { task ->
-            if (!task.isSuccessful) {
-                _registrationError.value = "Erro ao salvar dados no banco."
+    private fun saveUserToFirestore(usuario: Usuarios) {
+        firestore.collection("users") // Coleção chamada "users"
+            .document(usuario.id) // Documento com ID do usuário
+            .set(usuario) // Salva os dados diretamente como objeto
+            .addOnSuccessListener {
+                // Sucesso ao salvar
             }
-        }
+            .addOnFailureListener { e ->
+                // Erro ao salvar
+                _registrationError.value = "Erro ao salvar dados no Firestore: ${e.message}"
+            }
     }
 
     /**
