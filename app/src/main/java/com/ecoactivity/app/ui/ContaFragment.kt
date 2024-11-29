@@ -102,10 +102,16 @@ class ContaFragment : Fragment() {
 
         // Configura o botão de logout
         buttonLogout.setOnClickListener {
-            contaViewModel.logout()
-            Toast.makeText(context, "Logout realizado com sucesso!", Toast.LENGTH_SHORT).show()
-            activity?.finish()
+            contaViewModel.logoutUser { success ->
+                if (success) {
+                    Toast.makeText(context, "Logout realizado com sucesso!", Toast.LENGTH_SHORT).show()
+                    activity?.finish()
+                } else {
+                    Toast.makeText(context, "Erro ao realizar logout. Tente novamente.", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
+
 
         return view
     }

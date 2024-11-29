@@ -23,7 +23,6 @@ class AparelhoAdapter(
         val typeTextView: TextView = view.findViewById(R.id.textAparelhoType)
         val consumptionTextView: TextView = view.findViewById(R.id.textAparelhoConsumption)
         val costTextView: TextView = view.findViewById(R.id.textAparelhoCost)
-        val deleteButton: ImageButton = view.findViewById(R.id.buttonDelete)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -38,12 +37,6 @@ class AparelhoAdapter(
         holder.consumptionTextView.text = "${aparelho.consumoAtual} kWh"
         holder.costTextView.text = "R$ ${calculateCost(aparelho)}"
 
-        // Botão de exclusão
-        holder.deleteButton.visibility = if (showDeleteButton) View.VISIBLE else View.GONE
-        holder.deleteButton.setOnClickListener {
-            deleteAparelhoFromFirestore(aparelho)
-            onDeleteClick?.invoke(aparelho)
-        }
 
         // Controle de seleção
         holder.itemView.isSelected = selectedItems.contains(aparelho)
@@ -57,11 +50,11 @@ class AparelhoAdapter(
 
     override fun getItemCount() = aparelhos.size
 
-    fun updateAparelhos(newAparelhos: List<Aparelho>) {
-        aparelhos = newAparelhos
-        selectedItems.clear() // Limpa a seleção
-        notifyDataSetChanged()
+    fun updateAparelhos(novosAparelhos: List<Aparelho>) {
+        this.aparelhos = novosAparelhos
+        notifyDataSetChanged() // Garante que o RecyclerView seja atualizado
     }
+
 
     fun updateTariff(newTariff: Double) {
         tariff = newTariff

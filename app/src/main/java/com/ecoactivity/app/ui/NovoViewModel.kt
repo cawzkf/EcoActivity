@@ -1,8 +1,8 @@
-package com.ecoactivity.app.ui
-
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.ecoactivity.app.ui.Aparelho
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -11,76 +11,41 @@ class NovoViewModel : ViewModel() {
     private val firestore = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
 
-    private val _devices = MutableLiveData<List<Aparelho>>()
-    val devices: LiveData<List<Aparelho>> get() = _devices
-
-    private val _tariff = MutableLiveData<Double>()
-    val tariff: LiveData<Double> get() = _tariff
-
-    init {
-        loadAparelhosFromFirestore()
-        loadTariffFromFirestore()
-    }
+    // LiveData para notificar quando o modal deve ser fechado
+    private val _closeModal = MutableLiveData<Boolean>()
+    val closeModal: LiveData<Boolean> get() = _closeModal
 
     /**
-     * Carrega os aparelhos do Firestore.
+     * Adiciona um novo aparelho como documento na subcoleção 'aparelhos' do usuário logado.
      */
-    private fun loadAparelhosFromFirestore() {
-        val userId = auth.currentUser?.uid ?: return
+    fun addAparelho(novoAparelho: Aparelho) {
+        val userId = auth.currentUser?.uid // Obtém o ID do usuário logado
 
-        firestore.collection("users")
+        if (userId.isNullOrBlank()) {
+            Log.e("NovoViewModel", "Usuário não autenticado ou ID do usuário não encontrado.")
+            return
+        }
+
+        // Referência à subcoleção "aparelhos" dentro do documento do usuário logado
+        val aparelhosCollectionRef = firestore.collection("users")
             .document(userId)
             .collection("aparelhos")
-            .addSnapshotListener { snapshot, e ->
-                if (e != null) return@addSnapshotListener
 
-                val aparelhosList = snapshot?.documents?.mapNotNull { document ->
-                    document.toObject(Aparelho::class.java)?.copy(id = document.id)
-                } ?: listOf()
+        // Cria um novo documento na subcoleção
+        val newDocRef = aparelhosCollectionRef.document()
 
-                _devices.value = aparelhosList
+        // Define o ID do aparelho no Firestore
+        val aparelhoComId = novoAparelho.copy(id = newDocRef.id)
+
+        // Salva o aparelho como um novo documento na subcoleção
+        newDocRef.set(aparelhoComId)
+            .addOnSuccessListener {
+                Log.d("NovoViewModel", "Aparelho adicionado com sucesso: $aparelhoComId")
+                _closeModal.value = true
             }
-    }
-
-    /**
-     * Adiciona um aparelho ao Firestore.
-     */
-    fun addAparelho(aparelho: Aparelho) {
-        val userId = auth.currentUser?.uid ?: return
-
-        val newDoc = firestore.collection("users")
-            .document(userId)
-            .collection("aparelhos")
-            .document()
-
-        val novoAparelho = aparelho.copy(id = newDoc.id)
-        newDoc.set(novoAparelho)
-    }
-
-    /**
-     * Carrega a tarifa do Firestore.
-     */
-    private fun loadTariffFromFirestore() {
-        val userId = auth.currentUser?.uid ?: return
-
-        firestore.collection("users")
-            .document(userId)
-            .get()
-            .addOnSuccessListener { document ->
-                val tariff = document.getDouble("tariff") ?: 0.0
-                _tariff.value = tariff
+            .addOnFailureListener { e ->
+                Log.e("NovoViewModel", "Erro ao adicionar aparelho: ${e.message}")
+                _closeModal.value = false
             }
-    }
-
-    /**
-     * Define a tarifa no Firestore.
-     */
-    fun setTariff(newTariff: Double) {
-        val userId = auth.currentUser?.uid ?: return
-        _tariff.value = newTariff
-
-        firestore.collection("users")
-            .document(userId)
-            .update("tariff", newTariff)
     }
 }

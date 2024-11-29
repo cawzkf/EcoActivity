@@ -54,8 +54,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_graficos,
                 R.id.nav_aparelhos,
                 R.id.nav_notificacoes,
-                R.id.nav_conta,
-                R.id.nav_educacional
+                R.id.nav_conta
             ),
             drawerLayout
         )

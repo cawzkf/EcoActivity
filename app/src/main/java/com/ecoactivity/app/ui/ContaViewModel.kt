@@ -1,5 +1,6 @@
 package com.ecoactivity.app.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
@@ -103,7 +104,36 @@ class ContaViewModel : ViewModel() {
     /**
      * Faz logout do usuário.
      */
-    fun logout() {
-        auth.signOut()
+    fun logoutUser(callback: (Boolean) -> Unit) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+
+        if (userId != null) {
+            // Referência ao Firestore
+            val aparelhosRef = FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(userId)
+                .collection("aparelhos")
+
+            // Atualiza o status dos aparelhos para false antes de realizar o logout
+            aparelhosRef.get().addOnSuccessListener { documents ->
+                for (document in documents) {
+                    document.reference.update("statusAp", false).addOnFailureListener { e ->
+                        Log.e("Logout", "Erro ao atualizar aparelho: ${e.message}")
+                    }
+                }
+                // Realiza o logout após atualizar
+                FirebaseAuth.getInstance().signOut()
+                callback(true)
+            }.addOnFailureListener { e ->
+                Log.e("Logout", "Erro ao buscar aparelhos: ${e.message}")
+                callback(false)
+            }
+        } else {
+            // Caso o usuário já esteja deslogado
+            callback(false)
+        }
     }
+
+
+
 }

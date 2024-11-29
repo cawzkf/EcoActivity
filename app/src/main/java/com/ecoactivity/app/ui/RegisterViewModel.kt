@@ -1,5 +1,3 @@
-package com.ecoactivity.app.ui
-
 import android.content.Context
 import android.widget.TextView
 import androidx.lifecycle.LiveData
@@ -10,23 +8,21 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.firestore.FirebaseFirestore
+import com.ecoactivity.app.ui.Usuarios
 
-/**
- * ViewModel para gerenciar o registro de novos usuários.
- */
 class RegisterViewModel : ViewModel() {
 
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance() // Instância do Firebase Authentication
-    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance() // Instância do Firestore
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
 
-    private val _registrationError = MutableLiveData<String>() // Mensagem de erro de registro
+    private val _registrationError = MutableLiveData<String>()
     val registrationError: LiveData<String> get() = _registrationError
 
-    private val _registrationSuccess = MutableLiveData<Boolean>() // Sucesso no registro
+    private val _registrationSuccess = MutableLiveData<Boolean>()
     val registrationSuccess: LiveData<Boolean> get() = _registrationSuccess
 
     /**
-     * Registra um novo usuário com e-mail e senha.
+     * Registra um novo usuário com validações.
      */
     fun registerUser(email: String, password: String) {
         if (email.isEmpty() || password.isEmpty()) {
@@ -48,8 +44,7 @@ class RegisterViewModel : ViewModel() {
             if (task.isSuccessful) {
                 val user = auth.currentUser
                 user?.let {
-                    saveUserToFirestore(Usuarios(it.uid, email, System.currentTimeMillis())) // Salva usando a classe Usuarios
-                    _registrationSuccess.value = true
+                    saveUserToFirestore(it.uid, email)
                 }
             } else {
                 handleRegistrationError(task.exception)
@@ -58,35 +53,29 @@ class RegisterViewModel : ViewModel() {
     }
 
     /**
-     * Salva os dados do usuário no Firestore.
+     * Salva os dados do usuário no Firestore usando a classe `Usuarios`.
      */
-    private fun saveUserToFirestore(usuario: Usuarios) {
-        firestore.collection("users") // Coleção chamada "users"
-            .document(usuario.id) // Documento com ID do usuário
-            .set(usuario) // Salva os dados diretamente como objeto
+    private fun saveUserToFirestore(userId: String, email: String) {
+        val usuario = Usuarios(
+            id = userId,
+            email = email,
+            dateCreated = System.currentTimeMillis(),
+            status = true // Define o status como ativo inicialmente
+        )
+
+        firestore.collection("users")
+            .document(userId)
+            .set(usuario) // Salva o objeto da classe `Usuarios` diretamente
             .addOnSuccessListener {
-                // Sucesso ao salvar
+                _registrationSuccess.value = true
             }
             .addOnFailureListener { e ->
-                // Erro ao salvar
                 _registrationError.value = "Erro ao salvar dados no Firestore: ${e.message}"
             }
     }
 
     /**
-     * Trata erros de registro do Firebase Authentication.
-     */
-    private fun handleRegistrationError(exception: Exception?) {
-        val errorMessage = when (exception) {
-            is FirebaseAuthInvalidCredentialsException -> "E-mail inválido."
-            is FirebaseAuthUserCollisionException -> "Este e-mail já está em uso."
-            else -> "Erro desconhecido. Tente novamente."
-        }
-        _registrationError.value = errorMessage
-    }
-
-    /**
-     * Valida se a senha atende aos critérios de segurança.
+     * Valida os critérios de senha.
      */
     private fun isPasswordValid(password: String): Boolean {
         return password.length >= 8 &&
@@ -97,7 +86,7 @@ class RegisterViewModel : ViewModel() {
     }
 
     /**
-     * Atualiza os critérios de validação da senha dinamicamente.
+     * Atualiza dinamicamente as condições de senha.
      */
     fun validatePasswordConditions(
         password: String,
@@ -108,20 +97,32 @@ class RegisterViewModel : ViewModel() {
         conditionSpecial: TextView
     ) {
         conditionLength.setTextColor(getConditionColor(password.length >= 8, conditionLength.context))
-        conditionUppercase.setTextColor(getConditionColor(password.any { it.isUpperCase() }, conditionLength.context))
-        conditionLowercase.setTextColor(getConditionColor(password.any { it.isLowerCase() }, conditionLength.context))
-        conditionDigit.setTextColor(getConditionColor(password.any { it.isDigit() }, conditionLength.context))
-        conditionSpecial.setTextColor(getConditionColor(password.any { !it.isLetterOrDigit() }, conditionLength.context))
+        conditionUppercase.setTextColor(getConditionColor(password.any { it.isUpperCase() }, conditionUppercase.context))
+        conditionLowercase.setTextColor(getConditionColor(password.any { it.isLowerCase() }, conditionLowercase.context))
+        conditionDigit.setTextColor(getConditionColor(password.any { it.isDigit() }, conditionDigit.context))
+        conditionSpecial.setTextColor(getConditionColor(password.any { !it.isLetterOrDigit() }, conditionSpecial.context))
     }
 
     /**
-     * Retorna a cor com base na validade do critério.
+     * Define a cor para os critérios.
      */
     private fun getConditionColor(isValid: Boolean, context: Context): Int {
         return if (isValid) {
-            context.getColor(R.color.green) // Cor para critério atendido
+            context.getColor(R.color.green)
         } else {
-            context.getColor(R.color.error_red) // Cor para critério não atendido
+            context.getColor(R.color.error_red)
         }
+    }
+
+    /**
+     * Trata erros de registro.
+     */
+    private fun handleRegistrationError(exception: Exception?) {
+        val errorMessage = when (exception) {
+            is FirebaseAuthInvalidCredentialsException -> "E-mail inválido."
+            is FirebaseAuthUserCollisionException -> "Este e-mail já está em uso."
+            else -> "Erro desconhecido. Tente novamente."
+        }
+        _registrationError.value = errorMessage
     }
 }

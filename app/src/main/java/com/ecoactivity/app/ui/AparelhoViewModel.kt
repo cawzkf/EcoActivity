@@ -1,9 +1,8 @@
-package com.ecoactivity.app.ui
-
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.ecoactivity.app.ui.Aparelho
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -23,6 +22,9 @@ class AparelhoViewModel : ViewModel() {
         loadTariff()
     }
 
+    /**
+     * Carrega os aparelhos do Firestore.
+     */
     private fun loadDevices() {
         val userId = auth.currentUser?.uid ?: run {
             Log.e("AparelhoViewModel", "Usuário não autenticado.")
@@ -42,11 +44,16 @@ class AparelhoViewModel : ViewModel() {
                     document.toObject(Aparelho::class.java)?.copy(id = document.id)
                 } ?: emptyList()
 
+                // Atualiza o LiveData com todos os aparelhos
                 Log.d("AparelhoViewModel", "Aparelhos carregados: $devicesList")
                 _devices.value = devicesList
             }
     }
 
+
+    /**
+     * Carrega a tarifa do Firestore.
+     */
     private fun loadTariff() {
         val userId = auth.currentUser?.uid ?: run {
             Log.e("AparelhoViewModel", "Usuário não autenticado.")
@@ -66,28 +73,9 @@ class AparelhoViewModel : ViewModel() {
             }
     }
 
-    fun saveAparelho(aparelho: Aparelho) {
-        val userId = auth.currentUser?.uid ?: run {
-            Log.e("AparelhoViewModel", "Usuário não autenticado.")
-            return
-        }
-
-        val aparelhoRef = firestore.collection("users")
-            .document(userId)
-            .collection("aparelhos")
-            .document(aparelho.id.ifEmpty { firestore.collection("users").document(userId).collection("aparelhos").document().id })
-
-        val aparelhoComId = aparelho.copy(id = aparelhoRef.id)
-
-        aparelhoRef.set(aparelhoComId)
-            .addOnSuccessListener {
-                Log.d("AparelhoViewModel", "Aparelho salvo com sucesso: $aparelhoComId")
-            }
-            .addOnFailureListener { e ->
-                Log.e("AparelhoViewModel", "Erro ao salvar aparelho: ${e.message}")
-            }
-    }
-
+    /**
+     * Exclui um aparelho do Firestore.
+     */
     fun deleteAparelho(aparelho: Aparelho) {
         val userId = auth.currentUser?.uid ?: run {
             Log.e("AparelhoViewModel", "Usuário não autenticado.")
@@ -107,7 +95,9 @@ class AparelhoViewModel : ViewModel() {
             }
     }
 
-    // Adicionando a função deleteAparelhos
+    /**
+     * Exclui uma lista de aparelhos do Firestore.
+     */
     fun deleteAparelhos(aparelhos: List<Aparelho>) {
         val userId = auth.currentUser?.uid ?: run {
             Log.e("AparelhoViewModel", "Usuário não autenticado.")

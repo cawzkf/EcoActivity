@@ -1,38 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="16dp"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.AparelhoFragment">
 
-        <!-- Botão "Selecionar Tudo" -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:visibility="gone"
-            android:id="@+id/layoutSelectionControls">
+    <!-- Texto para o Tipo de Aparelho -->
+    <TextView
+        android:id="@+id/text_tipo_aparelho"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="3"
+        android:text="Tipo: "
+        android:textSize="16sp"
+        android:layout_marginEnd="8dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:singleLine="true" />
 
-            <Button
-                android:id="@+id/buttonSelectAll"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Selecionar Tudo"
-                android:layout_marginEnd="8dp" />
+    <!-- Texto para a Data do Cadastro -->
+    <TextView
+        android:id="@+id/text_data_cadastro"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="3"
+        android:text="Data: "
+        android:textSize="16sp"
+        android:layout_marginEnd="8dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:singleLine="true" />
 
-            <Button
-                android:id="@+id/buttonDeleteSelected"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Excluir Selecionados"
-                android:backgroundTint="@color/error_red"
-                android:textColor="@android:color/white" />
-        </LinearLayout>
+    <!-- Texto para a Quantidade -->
+    <TextView
+        android:id="@+id/text_quantidade"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:text="Qtd: "
+        android:textSize="16sp"
+        android:layout_marginEnd="8dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:singleLine="true" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerViewAparelhos"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </LinearLayout>
-
-
+    <!-- Botão para Excluir -->
+    <ImageButton
+        android:id="@+id/button_excluir_aparelho"
+        android:layout_width="35dp"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:contentDescription="Excluir Aparelho"
+        android:src="@drawable/ic_lixeira" />
+</LinearLayout>

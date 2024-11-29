@@ -1,80 +1,118 @@
 package com.ecoactivity.app.ui
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
+import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.ecoactivity.app.R
+import androidx.lifecycle.ViewModelStore
+import com.ecoactivity.app.databinding.FragmentAparelhoBinding
+import com.google.firebase.firestore.FirebaseFirestore
 
 class AparelhoFragment : Fragment() {
 
-    private lateinit var viewModel: AparelhoViewModel
-    private lateinit var aparelhoAdapter: AparelhoAdapter
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var selectAllButton: Button
-    private lateinit var deleteSelectedButton: Button
-    private lateinit var layoutSelectionControls: View
+    private lateinit var binding: FragmentAparelhoBinding
+    private val firestore = FirebaseFirestore.getInstance()
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_aparelho, container, false)
+    ): View {
+        binding = FragmentAparelhoBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        recyclerView = view.findViewById(R.id.recyclerViewAparelhos)
-        selectAllButton = view.findViewById(R.id.buttonSelectAll)
-        deleteSelectedButton = view.findViewById(R.id.buttonDeleteSelected)
-        layoutSelectionControls = view.findViewById(R.id.layoutSelectionControls)
+        // Obter automaticamente o userId e carregar dados do aparelho
+        obterUsuarioAtivo { userId ->
+            carregarDadosAparelho(userId)
+        }
+    }
 
-        recyclerView.layoutManager = LinearLayoutManager(context)
+    /**
+     * Função para carregar os dados do aparelho do Firestore.
+     */
+    private fun carregarDadosAparelho(userId: String) {
+        firestore.collection("users")
+            .document(userId)
+            .collection("aparelhos")
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                if (!querySnapshot.isEmpty) {
+                    // Obtém o primeiro aparelho (ou ajuste conforme necessário)
+                    val aparelhoDocument = querySnapshot.documents[0]
+                    val aparelho = aparelhoDocument.toObject(Aparelho::class.java)
 
-        viewModel = ViewModelProvider(requireActivity())[AparelhoViewModel::class.java]
-        aparelhoAdapter = AparelhoAdapter(
-            aparelhos = listOf(),
-            tariff = 0.0,
-            showDeleteButton = true,
-            onDeleteClick = { aparelho ->
-                viewModel.deleteAparelho(aparelho) // Excluir do Firestore
+                    if (aparelho != null) {
+                        // Define os valores nos TextViews
+                        binding.textTipoAparelho.text = "Tipo: ${aparelho.tipo}"
+                        binding.textDataCadastro.text = "Data: ${converterData(aparelho.dataCadastro)}"
+                        binding.textQuantidade.text = "Qtd: ${aparelho.quantidade}"
+
+                        // Configura o botão para excluir
+                        binding.buttonExcluirAparelho.setOnClickListener {
+                            excluirAparelho(userId, aparelho.id)
+                        }
+                    }
+                } else {
+                    Toast.makeText(context, "Nenhum aparelho encontrado.", Toast.LENGTH_SHORT).show()
+                }
             }
-        )
-
-        recyclerView.adapter = aparelhoAdapter
-
-        // Observar mudanças nos aparelhos no ViewModel
-        viewModel.devices.observe(viewLifecycleOwner) { aparelhos ->
-            if (aparelhos != null) {
-                Log.d("AparelhoFragment", "Atualizando aparelhos: $aparelhos")
-                aparelhoAdapter.updateAparelhos(aparelhos)
-            } else {
-                Log.d("AparelhoFragment", "Nenhum aparelho encontrado.")
+            .addOnFailureListener { e ->
+                Toast.makeText(context, "Erro ao carregar aparelhos: ${e.message}", Toast.LENGTH_SHORT).show()
             }
-        }
+    }
 
-        // Observar alterações na tarifa
-        viewModel.tariff.observe(viewLifecycleOwner) { newTariff ->
-            aparelhoAdapter.updateTariff(newTariff)
-        }
+    /**
+     * Função para excluir um aparelho do Firestore.
+     */
+    private fun excluirAparelho(userId: String, aparelhoId: String) {
+        firestore.collection("users")
+            .document(userId)
+            .collection("aparelhos")
+            .document(aparelhoId)
+            .delete()
+            .addOnSuccessListener {
+                Toast.makeText(context, "Aparelho excluído com sucesso!", Toast.LENGTH_SHORT).show()
+                // Atualizar ou reiniciar o fragmento para refletir as alterações
+                carregarDadosAparelho(userId)
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(context, "Erro ao excluir aparelho: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+    }
 
-        // Ações do botão "Selecionar Tudo"
-        selectAllButton.setOnClickListener {
-            aparelhoAdapter.selectAll()
-        }
+    /**
+     * Função para buscar o ID do usuário ativo.
+     */
+    private fun obterUsuarioAtivo(callback: (String) -> Unit) {
+        firestore.collection("users")
+            .whereEqualTo("status", true) // Busca o usuário com status ativo
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                if (!querySnapshot.isEmpty) {
+                    val userDocument = querySnapshot.documents[0]
+                    val userId = userDocument.id
+                    callback(userId)
+                } else {
+                    Toast.makeText(context, "Nenhum usuário ativo encontrado.", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(context, "Erro ao buscar usuário ativo: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+    }
 
-        // Ações do botão "Excluir Selecionados"
-        deleteSelectedButton.setOnClickListener {
-            val selectedItems = aparelhoAdapter.getSelectedItems()
-            viewModel.deleteAparelhos(selectedItems) // Excluir os itens selecionados no Firestore
-            layoutSelectionControls.visibility = View.GONE
-        }
+    /**
+     * Converte um timestamp para uma string de data legível.
+     */
+    private fun converterData(timestamp: Long): String {
+        val date = java.util.Date(timestamp)
+        val format = java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault())
+        return format.format(date)
     }
 }

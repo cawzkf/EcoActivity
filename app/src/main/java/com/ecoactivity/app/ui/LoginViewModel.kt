@@ -1,5 +1,6 @@
 package com.ecoactivity.app.ui
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -8,6 +9,7 @@ import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.FirebaseFirestore
 
 class LoginViewModel : ViewModel() {
 
@@ -26,10 +28,9 @@ class LoginViewModel : ViewModel() {
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    val userId = auth.currentUser?.uid // ID do usuário autenticado
-                    _loginState.value = LoginState.Success(userId)
+                    _loginState.value = LoginState.Success(auth.currentUser?.uid)
                 } else {
-                    _loginState.value = LoginState.Error(handleLoginError(task.exception))
+                    _loginState.value = LoginState.Error("Erro ao fazer login: ${task.exception?.message}")
                 }
             }
     }
@@ -48,4 +49,5 @@ class LoginViewModel : ViewModel() {
         data class Error(val message: String) : LoginState()
         object Loading : LoginState()
     }
+
 }

@@ -1,47 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="16dp"
+    android:padding="15dp"
     android:gravity="center_vertical">
 
+    <!-- Tipo -->
     <TextView
         android:id="@+id/textAparelhoType"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:text="Tipo"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        android:gravity="center" />
 
+    <!-- Consumo -->
     <TextView
         android:id="@+id/textAparelhoConsumption"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:text="Consumo"
-        android:layout_marginEnd="16dp" />
+        android:textSize="16sp"
+        android:gravity="center" />
 
-    <!-- Container para alinhar o custo e o botão de exclusão -->
-    <LinearLayout
-        android:layout_width="wrap_content"
+    <!-- Custo -->
+    <TextView
+        android:id="@+id/textAparelhoCost"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center">
-
-        <TextView
-            android:id="@+id/textAparelhoCost"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Custo" />
-
-        <!-- Botão de exclusão -->
-        <ImageButton
-            android:id="@+id/buttonDelete"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="8dp"
-            android:src="@drawable/ic_lixeira"
-            android:contentDescription="Excluir"
-            android:background="?attr/selectableItemBackground"
-            android:visibility="gone" />
-    </LinearLayout>
+        android:layout_weight="1"
+        android:text="Custo"
+        android:textSize="16sp"
+        android:gravity="center" />
 </LinearLayout>
